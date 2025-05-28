@@ -1,17 +1,17 @@
 # AI 市民助手 LINE Bot
 
-这是一个基于 LINE Bot 平台的智能市民助手，集成了多种功能，包括天气查询、新闻资讯、交通信息、旅游建议等。
+這是一個基於 LINE Bot 平台的智能市民助手，整合了多種功能，包括天氣查詢、新聞資訊、交通資訊、旅遊建議等。
 
-## 功能特点
+## 功能特點
 
-- 🌤️ 天气查询：支持台湾地区天气信息查询
-- 📰 新闻资讯：提供最新台湾新闻
-- 🚗 交通信息：实时交通状况查询
-- 🏞️ 旅游建议：景点推荐和旅游信息
-- 🌡️ 环境监测：室内环境数据监测
-- 💬 智能对话：基于 Gemini AI 的自然语言交互
+- 🌤️ 天氣查詢：支援台灣地區天氣資訊查詢
+- 📰 新聞資訊：提供最新台灣新聞
+- 🚗 交通資訊：即時交通狀況查詢
+- 🏞️ 旅遊建議：景點推薦和旅遊資訊
+- 🌡️ 環境監測：室內環境數據監測
+- 💬 智能對話：基於 Gemini AI 的自然語言互動
 
-## 技术栈
+## 技術
 
 - Python 3.8+
 - Flask
@@ -22,15 +22,15 @@
 - OpenWeatherMap API
 - NewsAPI
 
-## 安装步骤
+## 安裝步驟
 
-1. 克隆项目
+1. Clone Project
 ```bash
 git clone [your-repository-url]
 cd linebot-project
 ```
 
-2. 创建虚拟环境
+2. 建立虛擬環境
 ```bash
 python -m venv venv
 source venv/bin/activate  # Linux/Mac
@@ -38,70 +38,70 @@ source venv/bin/activate  # Linux/Mac
 .\venv\Scripts\activate  # Windows
 ```
 
-3. 安装依赖
+3. 安裝依賴套件
 ```bash
 pip install -r requirements.txt
 ```
 
-4. 配置环境变量
-创建 `.env` 文件并配置以下环境变量：
+4. 設定環境變數
+建立 `.env` 檔案並設定以下環境變數：
 ```env
-# LINE Bot 配置
-LINE_CHANNEL_SECRET=your_line_channel_secret
-LINE_CHANNEL_ACCESS_TOKEN=your_line_channel_access_token
+# LINE Bot 設定
+LINE_CHANNEL_SECRET=你的_line_channel_secret
+LINE_CHANNEL_ACCESS_TOKEN=你的_line_channel_access_token
 
-# API Keys
-WEATHER_API_KEY=your_openweathermap_api_key
-NEWS_API_KEY=your_newsapi_key
-GOOGLE_MAPS_API_KEY=your_google_maps_api_key
-GEMINI_API_KEY=your_gemini_api_key
+# API 金鑰
+WEATHER_API_KEY=你的_openweathermap_api_key
+NEWS_API_KEY=你的_newsapi_key
+Maps_API_KEY=你的_Maps_api_key
+GEMINI_API_KEY=你的_gemini_api_key
 
-# Firebase 配置
-FIREBASE_CREDENTIALS_PATH=path_to_your_firebase_credentials.json
+# Firebase 設定
+FIREBASE_CREDENTIALS_PATH=你的_firebase_憑證檔案路徑.json
 ```
 
-## 运行项目
+## 執行專案
 
 ```bash
 python app.py
 ```
 
-## 环境变量说明
+## 環境變數說明
 
 - `LINE_CHANNEL_SECRET`: LINE Bot 的 Channel Secret
 - `LINE_CHANNEL_ACCESS_TOKEN`: LINE Bot 的 Channel Access Token
-- `WEATHER_API_KEY`: OpenWeatherMap API 密钥
-- `NEWS_API_KEY`: NewsAPI 密钥
-- `GOOGLE_MAPS_API_KEY`: Google Maps API 密钥
-- `GEMINI_API_KEY`: Google Gemini AI API 密钥
-- `FIREBASE_CREDENTIALS_PATH`: Firebase 服务账号密钥文件路径
+- `WEATHER_API_KEY`: OpenWeatherMap API 金鑰
+- `NEWS_API_KEY`: NewsAPI 金鑰
+- `GOOGLE_MAPS_API_KEY`: Google Maps API 金鑰
+- `GEMINI_API_KEY`: Google Gemini AI API 金鑰
+- `FIREBASE_CREDENTIALS_PATH`: Firebase 服務帳號金鑰檔案路徑
 
-## 安全注意事项
+## 安全注意事項
 
-1. 永远不要将 `.env` 文件提交到版本控制系统
-2. 确保 `firebase_credentials.json` 文件安全存储
-3. 定期轮换 API 密钥
-4. 使用环境变量而不是硬编码的密钥
+1. 永遠不要將  `.env` 檔案提交到版本控制系統
+2. 確保  `firebase_credentials.json` 檔案安全儲存
+3. 定期輪換 API 金鑰
+4. 使用環境變數而非寫死在程式碼中的金鑰
 
 ## API 使用限制
 
-- Google Maps API: 每日 1000 次请求
-- OpenWeatherMap API: 每分钟 60 次请求
-- NewsAPI: 每日 100 次请求
-- Gemini AI API: 每分钟 60 次请求
+- Google Maps API: 每日 1000 次請求
+- OpenWeatherMap API: 每分鐘 60 次請求
+- NewsAPI: 每日 100 次請求
+- Gemini AI API: 每分鐘 60 次請求
 
-## 贡献指南
+## 貢獻指南
 
-1. Fork 项目
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 创建 Pull Request
+1. Fork 專案
+2. 建立特性分支 (git checkout -b feature/AmazingFeature)
+3. 提交變更 (git commit -m 'Add some AmazingFeature')
+4.推送到分支 (git push origin feature/AmazingFeature)
+5. 建立 Pull Request
 
-## 许可证
+## 授權條款
 
 MIT License
 
-## 联系方式
+## 聯絡方式
 
-[Your Name] - [Your Email] 
+[Yoga Liang] - [ch993115@gmail.com] 
