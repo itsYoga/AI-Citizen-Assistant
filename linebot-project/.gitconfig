@@ -1,0 +1,47 @@
+[core]
+    excludesfile = .gitignore
+    autocrlf = input
+    safecrlf = warn
+    editor = vim
+
+[push]
+    default = simple
+
+[color]
+    ui = auto
+
+[alias]
+    st = status
+    co = checkout
+    br = branch
+    ci = commit
+    unstage = reset HEAD --
+    last = log -1 HEAD
+    visual = !gitk
+
+[filter "lfs"]
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
+
+[init]
+    defaultBranch = main
+
+[help]
+    autocorrect = 1
+
+[credential]
+    helper = cache --timeout=3600
+
+[url "https://github.com/"]
+    insteadOf = git://github.com/
+
+[url "https://"]
+    insteadOf = git://
+
+[url "https://github.com/"]
+    insteadOf = ssh://git@github.com/
+
+[url "https://github.com/"]
+    insteadOf = git@github.com: 
