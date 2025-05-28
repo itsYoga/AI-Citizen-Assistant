@@ -9,7 +9,7 @@ import time
 
 load_dotenv()
 
-# 配置日志
+# 配置日誌
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -21,12 +21,12 @@ try:
     cred = credentials.Certificate(FIREBASE_CREDENTIALS_PATH)
     firebase_admin.initialize_app(cred)
     db = firestore.client()
-    logger.info("Firebase initialized successfully")
+    logger.info("Firebase 初始化成功")
 except Exception as e:
-    logger.error(f"Error initializing Firebase: {e}")
+    logger.error(f"初始化 Firebase 時發生錯誤: {e}")
     raise
 
-# 重试装饰器
+# 重試裝飾器
 def retry_on_error(max_retries=3, delay=1):
     def decorator(func):
         @wraps(func)
@@ -36,9 +36,9 @@ def retry_on_error(max_retries=3, delay=1):
                     return func(*args, **kwargs)
                 except Exception as e:
                     if attempt == max_retries - 1:
-                        logger.error(f"Failed after {max_retries} attempts: {e}")
+                        logger.error(f"重試 {max_retries} 次後失敗: {e}")
                         raise
-                    logger.warning(f"Attempt {attempt + 1} failed: {e}")
+                    logger.warning(f"第 {attempt + 1} 次嘗試失敗: {e}")
                     time.sleep(delay)
             return None
         return wrapper
@@ -46,7 +46,7 @@ def retry_on_error(max_retries=3, delay=1):
 
 @retry_on_error()
 def save_conversation(user_id, user_message, bot_response):
-    """保存对话记录到 Firestore"""
+    """儲存對話記錄到 Firestore"""
     try:
         conversation_ref = db.collection('conversations').document()
         conversation_ref.set({
@@ -55,14 +55,14 @@ def save_conversation(user_id, user_message, bot_response):
             'bot_response': bot_response,
             'timestamp': firestore.SERVER_TIMESTAMP
         })
-        logger.info(f"Conversation saved for user {user_id}")
+        logger.info(f"已儲存使用者 {user_id} 的對話記錄")
     except Exception as e:
-        logger.error(f"Error saving conversation: {e}")
+        logger.error(f"儲存對話記錄時發生錯誤: {e}")
         raise
 
 @retry_on_error()
 def get_user_conversations(user_id, limit=10):
-    """获取用户的最近对话记录"""
+    """獲取使用者的最近對話記錄"""
     try:
         conversations = db.collection('conversations')\
             .where('user_id', '==', user_id)\
@@ -72,26 +72,26 @@ def get_user_conversations(user_id, limit=10):
         
         return [doc.to_dict() for doc in conversations]
     except Exception as e:
-        logger.error(f"Error getting user conversations: {e}")
+        logger.error(f"獲取使用者對話記錄時發生錯誤: {e}")
         raise
 
 @retry_on_error()
 def save_environment_data(data):
-    """保存环境传感器数据"""
+    """儲存環境感測器數據"""
     try:
         data_ref = db.collection('environment_data').document()
         data_ref.set({
             **data,
             'timestamp': firestore.SERVER_TIMESTAMP
         })
-        logger.info("Environment data saved successfully")
+        logger.info("環境數據儲存成功")
     except Exception as e:
-        logger.error(f"Error saving environment data: {e}")
+        logger.error(f"儲存環境數據時發生錯誤: {e}")
         raise
 
 @retry_on_error()
 def get_latest_environment_data():
-    """获取最新的环境数据"""
+    """獲取最新的環境數據"""
     try:
         data = db.collection('environment_data')\
             .order_by('timestamp', direction=firestore.Query.DESCENDING)\
@@ -102,18 +102,18 @@ def get_latest_environment_data():
             return doc.to_dict()
         return None
     except Exception as e:
-        logger.error(f"Error getting latest environment data: {e}")
+        logger.error(f"獲取最新環境數據時發生錯誤: {e}")
         raise
 
-# 清理旧数据的函数
+# 清理舊數據的函數
 @retry_on_error()
 def cleanup_old_data(days=30):
-    """清理指定天数前的数据"""
+    """清理指定天數前的數據"""
     try:
         cutoff_date = datetime.now() - timedelta(days=days)
         cutoff_timestamp = firestore.SERVER_TIMESTAMP
         
-        # 清理对话记录
+        # 清理對話記錄
         conversations = db.collection('conversations')\
             .where('timestamp', '<', cutoff_timestamp)\
             .stream()
@@ -121,7 +121,7 @@ def cleanup_old_data(days=30):
         for doc in conversations:
             doc.reference.delete()
         
-        # 清理环境数据
+        # 清理環境數據
         env_data = db.collection('environment_data')\
             .where('timestamp', '<', cutoff_timestamp)\
             .stream()
@@ -129,7 +129,7 @@ def cleanup_old_data(days=30):
         for doc in env_data:
             doc.reference.delete()
             
-        logger.info(f"Cleaned up data older than {days} days")
+        logger.info(f"已清理 {days} 天前的舊數據")
     except Exception as e:
-        logger.error(f"Error cleaning up old data: {e}")
+        logger.error(f"清理舊數據時發生錯誤: {e}")
         raise 

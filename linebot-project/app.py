@@ -10,7 +10,7 @@ import logging
 from logging.handlers import RotatingFileHandler
 import time
 
-# Import custom modules
+# 導入自定義模組
 import gemini_service
 import firebase_service
 import services
@@ -19,7 +19,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# 配置日志
+# 配置日誌
 if not os.path.exists('logs'):
     os.mkdir('logs')
 file_handler = RotatingFileHandler('logs/app.log', maxBytes=10240, backupCount=10)
@@ -34,33 +34,33 @@ app.logger.info('AI市民助手啟動')
 def millis():
     return int(time.time() * 1000)
 
-# LINE Bot configuration
+# LINE Bot 配置
 LINE_CHANNEL_SECRET = os.getenv('LINE_CHANNEL_SECRET')
 LINE_CHANNEL_ACCESS_TOKEN = os.getenv('LINE_CHANNEL_ACCESS_TOKEN')
 
 if not LINE_CHANNEL_SECRET or not LINE_CHANNEL_ACCESS_TOKEN:
-    app.logger.error("Error: LINE_CHANNEL_SECRET or LINE_CHANNEL_ACCESS_TOKEN not found in .env")
+    app.logger.error("錯誤：在 .env 檔案中找不到 LINE_CHANNEL_SECRET 或 LINE_CHANNEL_ACCESS_TOKEN")
     exit()
 
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
 configuration = Configuration(access_token=LINE_CHANNEL_ACCESS_TOKEN)
 
-# Global variable to store Arduino data
+# 全域變數用於儲存 Arduino 數據
 latest_arduino_data = {
     'temperature': None,
     'humidity': None,
     'timestamp': None
 }
 
-# 错误处理装饰器
+# 錯誤處理裝飾器
 def handle_errors(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         try:
             return f(*args, **kwargs)
         except Exception as e:
-            app.logger.error(f"Error in {f.__name__}: {str(e)}")
-            return jsonify({"error": "Internal server error"}), 500
+            app.logger.error(f"函數 {f.__name__} 發生錯誤：{str(e)}")
+            return jsonify({"error": "伺服器內部錯誤"}), 500
     return decorated_function
 
 @app.route("/webhook", methods=['POST'])
@@ -68,14 +68,14 @@ def handle_errors(f):
 def webhook():
     signature = request.headers['X-Line-Signature']
     body = request.get_data(as_text=True)
-    app.logger.info("Request body: " + body)
+    app.logger.info("請求內容：" + body)
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
-        app.logger.error("Invalid signature. Please check your channel access token/channel secret.")
+        app.logger.error("無效的簽名。請檢查您的頻道存取權杖/頻道密鑰。")
         abort(400)
     except Exception as e:
-        app.logger.error(f"Error handling request: {e}")
+        app.logger.error(f"處理請求時發生錯誤：{e}")
         abort(500)
     return 'OK'
 
@@ -83,10 +83,10 @@ def webhook():
 def handle_message(event):
     user_id = event.source.user_id
     user_message = event.message.text
-    reply_text = "抱歉，我不明白您的意思。"  # Default response
+    reply_text = "抱歉，我不明白您的意思。"  # 預設回應
 
     try:
-        # 檢查消息類型並處理
+        # 檢查訊息類型並處理
         if user_message.lower() == "arduino":
             if latest_arduino_data['temperature'] is not None and latest_arduino_data['humidity'] is not None:
                 reply_text = f"""
@@ -100,8 +100,8 @@ def handle_message(event):
                 reply_text = "目前尚未收到 Arduino 感測器的數據。"
                 
         elif "天氣" in user_message or "天气" in user_message:
-            location = "台北"  # Default location
-            # 提取城市名称
+            location = "台北"  # 預設地點
+            # 提取城市名稱
             if "天氣" in user_message:
                 parts = user_message.split("天氣")
                 if len(parts) > 1 and parts[0].strip():
@@ -111,7 +111,7 @@ def handle_message(event):
                 if len(parts) > 1 and parts[0].strip():
                     location = parts[0].strip()
             
-            app.logger.info(f"查询天气信息，地点：{location}")
+            app.logger.info(f"查詢天氣資訊，地點：{location}")
             reply_text = services.get_weather(location)
             
         elif "新聞" in user_message or "新闻" in user_message:
@@ -144,22 +144,22 @@ def handle_message(event):
             if latest_arduino_data['temperature'] is not None and latest_arduino_data['humidity'] is not None:
                 reply_text = gemini_service.report_environment_data(latest_arduino_data)
             else:
-                reply_text = "目前尚未收到环境感测器的数据。"
+                reply_text = "目前尚未收到環境感測器的數據。"
         else:
-            # General conversation with Gemini
+            # 使用 Gemini 進行一般對話
             reply_text = gemini_service.generate_text(f"使用者說：「{user_message}」。請以市民助理的身份自然地回應。")
 
     except Exception as e:
-        app.logger.error(f"Error processing message: {e}")
-        reply_text = "处理您的请求时发生内部错误，请稍后再试。"
+        app.logger.error(f"處理訊息時發生錯誤：{e}")
+        reply_text = "處理您的請求時發生內部錯誤，請稍後再試。"
 
-    # Save conversation to Firebase
+    # 將對話儲存到 Firebase
     try:
         firebase_service.save_conversation(user_id, user_message, reply_text)
     except Exception as e:
-        app.logger.error(f"Error saving to Firebase: {e}")
+        app.logger.error(f"儲存到 Firebase 時發生錯誤：{e}")
 
-    # Send reply through LINE Bot
+    # 透過 LINE Bot 發送回應
     with ApiClient(configuration) as api_client:
         line_bot_api = MessagingApi(api_client)
         try:
@@ -170,7 +170,7 @@ def handle_message(event):
                 )
             )
         except Exception as e:
-            app.logger.error(f"Error sending LINE reply: {e}")
+            app.logger.error(f"發送 LINE 回應時發生錯誤：{e}")
 
 @app.route("/arduino/data", methods=['POST'])
 @handle_errors
@@ -178,51 +178,51 @@ def receive_arduino_data():
     global latest_arduino_data
     try:
         data = request.get_json()
-        app.logger.info(f"Received Arduino data: {data}")
+        app.logger.info(f"收到 Arduino 數據：{data}")
         if data and 'temperature' in data and 'humidity' in data:
             latest_arduino_data = {
                 'temperature': data.get('temperature'),
                 'humidity': data.get('humidity'),
                 'timestamp': data.get('timestamp', millis())
             }
-            app.logger.info(f"Updated latest_arduino_data: {latest_arduino_data}")
-            return "Data received successfully", 200
+            app.logger.info(f"更新 latest_arduino_data：{latest_arduino_data}")
+            return "數據接收成功", 200
         else:
-            app.logger.warning("Invalid Arduino data received.")
-            return "Invalid data", 400
+            app.logger.warning("收到無效的 Arduino 數據。")
+            return "無效的數據", 400
     except Exception as e:
-        app.logger.error(f"Error receiving Arduino data: {e}")
-        return "Error processing data", 500
+        app.logger.error(f"接收 Arduino 數據時發生錯誤：{e}")
+        return "處理數據時發生錯誤", 500
 
 @app.route('/sensor-data', methods=['POST'])
 def receive_sensor_data():
     global latest_arduino_data
     try:
-        app.logger.info("Received request to /sensor-data endpoint")
-        app.logger.info(f"Request headers: {dict(request.headers)}")
-        app.logger.info(f"Request data: {request.get_data(as_text=True)}")
+        app.logger.info("收到 /sensor-data 端點的請求")
+        app.logger.info(f"請求標頭：{dict(request.headers)}")
+        app.logger.info(f"請求數據：{request.get_data(as_text=True)}")
         
         data = request.get_json()
-        app.logger.info(f"Received sensor data: {data}")
+        app.logger.info(f"收到感測器數據：{data}")
         
         if not data or 'humidity' not in data or 'temperature' not in data:
-            app.logger.warning("Invalid data format received")
-            return jsonify({'error': 'Invalid data format'}), 400
+            app.logger.warning("收到無效的數據格式")
+            return jsonify({'error': '無效的數據格式'}), 400
 
         latest_arduino_data = {
             'temperature': data.get('temperature'),
             'humidity': data.get('humidity'),
             'timestamp': data.get('timestamp', millis())
         }
-        app.logger.info(f"Updated latest_arduino_data: {latest_arduino_data}")
+        app.logger.info(f"更新 latest_arduino_data：{latest_arduino_data}")
 
         # 準備回應
-        response = jsonify({'status': 'success', 'message': 'Data received successfully'})
-        app.logger.info(f"Sending response: {response.get_data(as_text=True)}")
+        response = jsonify({'status': 'success', 'message': '數據接收成功'})
+        app.logger.info(f"發送回應：{response.get_data(as_text=True)}")
         return response
 
     except Exception as e:
-        app.logger.error(f"Error processing sensor data: {str(e)}")
+        app.logger.error(f"處理感測器數據時發生錯誤：{str(e)}")
         return jsonify({'error': str(e)}), 500
 
 if __name__ == "__main__":

@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 
 if not GEMINI_API_KEY:
-    logger.warning("GEMINI_API_KEY 未在環境變量中找到")
+    logger.warning("GEMINI_API_KEY 未在環境變數中找到")
     model = None
 else:
     try:
@@ -49,7 +49,7 @@ def retry_on_error(max_retries=3, delay=1):
 @retry_on_error()
 @lru_cache(maxsize=100)
 def generate_text(prompt, temperature=0.7):
-    """生成文本響應"""
+    """生成文字回應"""
     if model is None:
         return "抱歉，AI 服務暫時無法使用。"
         
@@ -62,7 +62,7 @@ def generate_text(prompt, temperature=0.7):
 3. 如果是問候語，要熱情回應
 4. 如果是問題，要給出實用的建議"""
         
-        full_prompt = f"{system_prompt}\n\n用戶訊息：{prompt}"
+        full_prompt = f"{system_prompt}\n\n使用者訊息：{prompt}"
         
         response = model.generate_content(
             full_prompt,
@@ -79,7 +79,7 @@ def generate_text(prompt, temperature=0.7):
             
         return response.text
     except Exception as e:
-        logger.error(f"生成文本時發生錯誤: {e}")
+        logger.error(f"生成文字時發生錯誤: {e}")
         return "您好！我是 AI 市民助理，很高興為您服務。"
 
 @retry_on_error()
@@ -102,15 +102,15 @@ def report_environment_data(data):
 
 @retry_on_error()
 def analyze_user_sentiment(text):
-    """分析用戶情緒"""
+    """分析使用者情緒"""
     if model is None:
         return "抱歉，AI 服務暫時無法使用。"
         
     try:
-        prompt = f"""請分析以下用戶消息的情緒傾向：
+        prompt = f"""請分析以下使用者訊息的情緒傾向：
 "{text}"
 
-請以市民助理的身份，簡要說明用戶可能的情緒狀態，並給出適當的回應建議。"""
+請以市民助理的身份，簡要說明使用者可能的情緒狀態，並給出適當的回應建議。"""
         
         return generate_text(prompt, temperature=0.3)
     except Exception as e:
@@ -119,23 +119,23 @@ def analyze_user_sentiment(text):
 
 @retry_on_error()
 def generate_help_message():
-    """生成幫助信息"""
+    """生成幫助訊息"""
     if model is None:
         return """您好！我是 AI 市民助理，我可以為您提供以下服務：
 1. 天氣查詢：輸入「天氣」或「台北天氣」等
 2. 新聞資訊：輸入「新聞」或「最新新聞」
-3. 交通信息：輸入「交通」或「台北交通」
+3. 交通資訊：輸入「交通」或「台北交通」
 4. 旅遊建議：輸入「景點」或「台北景點」
-5. 環境狀況：輸入「環境」或「空氣質量」
+5. 環境狀況：輸入「環境」或「空氣品質」
 6. 一般對話：直接輸入您想說的話
 
 目前 AI 對話功能暫時無法使用，但其他功能都可以正常使用。"""
         
     try:
-        prompt = """請以市民助理的身份，生成一份簡潔的幫助信息，說明我可以提供的服務：
+        prompt = """請以市民助理的身份，生成一份簡潔的幫助訊息，說明我可以提供的服務：
 1. 天氣查詢
 2. 新聞資訊
-3. 交通信息
+3. 交通資訊
 4. 旅遊建議
 5. 環境狀況
 6. 一般對話
@@ -144,5 +144,5 @@ def generate_help_message():
         
         return generate_text(prompt, temperature=0.5)
     except Exception as e:
-        logger.error(f"生成幫助信息時發生錯誤: {e}")
-        return "抱歉，無法生成幫助信息，請稍後再試。"
+        logger.error(f"生成幫助訊息時發生錯誤: {e}")
+        return "抱歉，無法生成幫助訊息，請稍後再試。"
